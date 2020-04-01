@@ -1,3 +1,4 @@
+import torch 
 
-print('pytorch')
-print('this doesnt work')
+version = torch.__version__
+print(version)
