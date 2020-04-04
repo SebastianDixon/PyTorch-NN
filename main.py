@@ -1,10 +1,6 @@
 import torch 
 
-version = torch.__version__
-print(version)
+t = torch.tensor([1,2,3])
 
-version2 = torch.version.cuda
-print(version2)
-
-gpu_check = torch.cuda.is_available()
-print(gpu_check)
+gpu = t.cuda()
+print(gpu)
