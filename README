@@ -1,2 +1,4 @@
 PyTorch for neural net development
 Learning how to use PyTorch with the deeplizard online course
+
+Using the Fashing-MNIST dataset: https://github.com/zalandoresearch/fashion-mnist
