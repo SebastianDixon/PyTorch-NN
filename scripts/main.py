@@ -49,12 +49,12 @@ def batch():
     images, labels = batch
     pred = network(images)
 
-    error = pred.argmax(dim=1).eq(labels).sum().item()
+    correct = pred.argmax(dim=1).eq(labels).sum().item()
 
     print(F.softmax(pred, dim=1), '\n')
     print(pred.argmax(dim=1))
     print(labels)
-    print(error, '\n')
+    print(correct, '\n')
 
     return print(pred)
 
