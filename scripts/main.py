@@ -4,8 +4,9 @@ import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
 
+import torch.optim as optim
+
 torch.set_printoptions(linewidth=120)
-torch.set_grad_enabled(False)
 
 train_set = torchvision.datasets.FashionMNIST(
     root='./data/FashionMNIST'
@@ -15,7 +16,7 @@ train_set = torchvision.datasets.FashionMNIST(
         transforms.ToTensor()
     ])
 )
-train_loader = torch.utils.data.DataLoader(train_set, batch_size=5)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=100)
 
 
 class Network(nn.Module):
@@ -42,24 +43,34 @@ class Network(nn.Module):
 
         return t
 
+def num_correct(preds, labels):
+    return preds.argmax(dim=1).eq(labels).sum().item()
+
 
 def batch():
     network = Network()
     batch = next(iter(train_loader))
-    images, labels = batch
-    pred = network(images)
+    optimiser = optim.Adam(network.parameters(), lr=0.01)
 
-    correct = pred.argmax(dim=1).eq(labels).sum().item()
+    for epoch in range(3):
 
-    print(F.softmax(pred, dim=1), '\n')
-    print(pred.argmax(dim=1))
-    print(labels)
-    print(correct, '\n')
+        total_loss = 0
+        total_correct = 0
 
-    return print(pred)
+        for batch in train_loader: #looping each image in the batch
+            images, labels = batch
 
-network = Network()
-batch_item = next(iter(train_set))
-image, label = batch_item
-pred = network(image.unsqueeze(0))
-print(pred, '\n')
+            preds = network(images)
+            loss = F.cross_entropy(preds, labels)
+
+            optimiser.zero_grad()
+            loss.backward()
+            optimiser.step()
+
+            total_loss += loss.item()
+            total_correct += num_correct(preds, labels)
+
+        print('epoch:', epoch , 'loss:', total_loss, 'total correct:', total_correct)
+
+
+batch()
