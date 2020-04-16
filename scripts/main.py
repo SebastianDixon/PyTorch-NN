@@ -52,7 +52,7 @@ def batch():
     batch = next(iter(train_loader))
     optimiser = optim.Adam(network.parameters(), lr=0.01)
 
-    for epoch in range(3):
+    for epoch in range(1):
 
         total_loss = 0
         total_correct = 0
