@@ -50,29 +50,29 @@ def num_correct(preds, labels):
 
 
 def train():
-    batch_size_list = [100, 500, 1000]
-    lr_list = [0.001, 0.01]
-    shuffle_list = [True, False]
+    batch_size_list = [100]
+    lr_list = [0.01]
+    num_workers_list = [1,2]
 
     for batch_size in batch_size_list:
         for lr in lr_list:
-            for shuffle in shuffle_list:
+            for num_workers in num_workers_list:
                 
                 network = Network()
-                train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=shuffle)
+                loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, num_workers=num_workers)
                 optimiser = optim.Adam(network.parameters(), lr=lr)
 
-                images, labels = next(iter(train_loader))
+                images, labels = next(iter(loader))
                 grid = torchvision.utils.make_grid(images)
 
                 tb = SummaryWriter()
 
-                comment = f' batchsize ={batch_size} lr ={lr} shuffle ={shuffle}'
+                comment = f' batchsize ={batch_size} lr ={lr} num workers ={num_workers}'
                 tb = SummaryWriter(comment=comment)
                 tb.add_image('images', grid)
                 tb.add_graph(network, images)
 
-                for epoch in range(10):
+                for epoch in range(5):
 
                     total_loss = 0
                     total_correct = 0
@@ -99,5 +99,5 @@ def train():
                         tb.add_histogram(f'{name}.grad' , weight.grad, epoch)
 
                     print('epoch:', epoch , 'loss:', total_loss, 'total correct:', total_correct)
-
+    
                 tb.close()
