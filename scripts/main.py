@@ -47,30 +47,55 @@ def num_correct(preds, labels):
     return preds.argmax(dim=1).eq(labels).sum().item()
 
 
-def batch():
-    network = Network()
-    batch = next(iter(train_loader))
-    optimiser = optim.Adam(network.parameters(), lr=0.01)
+def train():
+    batch_size_list = [100, 500, 1000]
+    lr_list = [0.001, 0.01]
+    shuffle_list = [True, False]
 
-    for epoch in range(1):
+    for batch_size in batch_size_list:
+        for lr in lr_list:
+            for shuffle in shuffle_list:
+                
+                network = Network()
+                train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=shuffle)
+                optimiser = optim.Adam(network.parameters(), lr=lr)
 
-        total_loss = 0
-        total_correct = 0
+                images, labels = next(iter(train_loader))
+                grid = torchvision.utils.make_grid(images)
 
-        for batch in train_loader: #looping each image in the batch
-            images, labels = batch
+                tb = SummaryWriter()
 
-            preds = network(images)
-            loss = F.cross_entropy(preds, labels)
+                comment = f' batchsize ={batch_size} lr ={lr} shuffle ={shuffle}'
+                tb = SummaryWriter(comment=comment)
+                tb.add_image('images', grid)
+                tb.add_graph(network, images)
 
-            optimiser.zero_grad()
-            loss.backward()
-            optimiser.step()
+                for epoch in range(10):
 
-            total_loss += loss.item()
-            total_correct += num_correct(preds, labels)
+                    total_loss = 0
+                    total_correct = 0
 
-        print('epoch:', epoch , 'loss:', total_loss, 'total correct:', total_correct)
+                    for batch in train_loader: 
+                        images, labels = batch
 
+                        preds = network(images)
+                        loss = F.cross_entropy(preds, labels)
 
-batch()
+                        optimiser.zero_grad()
+                        loss.backward()
+                        optimiser.step()
+
+                        total_loss += loss.item() * batch_size
+                        total_correct += num_correct(preds, labels)
+
+                    tb.add_scalar('loss', total_loss, epoch)
+                    tb.add_scalar('number correct', total_correct, epoch)
+                    tb.add_scalar('accuracy', total_correct/len(train_set), epoch)
+
+                    for name, weight in network.named_parameters():
+                        tb.add_histogram(name, weight, epoch)
+                        tb.add_histogram(f'{name}.grad' , weight.grad, epoch)
+
+                    print('epoch:', epoch , 'loss:', total_loss, 'total correct:', total_correct)
+
+                tb.close()`
