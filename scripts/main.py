@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
 
+from torch.utils.tensorboard import SummaryWriter
+
 import torch.optim as optim
 
 torch.set_printoptions(linewidth=120)
