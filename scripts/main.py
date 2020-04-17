@@ -98,4 +98,4 @@ def train():
 
                     print('epoch:', epoch , 'loss:', total_loss, 'total correct:', total_correct)
 
-                tb.close()`
+                tb.close()
