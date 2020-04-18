@@ -52,7 +52,7 @@ def num_correct(preds, labels):
 def train():
     batch_size_list = [100]
     lr_list = [0.01]
-    num_workers_list = [1,2]
+    num_workers_list = [1]
 
     for batch_size in batch_size_list:
         for lr in lr_list:
@@ -72,7 +72,7 @@ def train():
                 tb.add_image('images', grid)
                 tb.add_graph(network, images)
 
-                for epoch in range(5):
+                for epoch in range(25):
 
                     total_loss = 0
                     total_correct = 0
@@ -101,3 +101,5 @@ def train():
                     print('epoch:', epoch , 'loss:', total_loss, 'total correct:', total_correct)
     
                 tb.close()
+
+train()
